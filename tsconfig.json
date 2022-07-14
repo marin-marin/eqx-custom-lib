@@ -1,0 +1,11 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "CommonJS",
+        "strict": true,
+        "noEmit": false,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true
+    }
+}
