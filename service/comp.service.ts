@@ -1,6 +1,7 @@
 import EqxCustomMgrServ from './base.service'
 import '../types.ts'
-import { EqxComp, EqxScene } from '../types'
+import { EqxComp, EqxScene, EqxCompJson } from '../types'
+import { compType } from '../const/h5'
 
 /**
  * 定制Comp
@@ -22,20 +23,58 @@ class CustomComp {
   private get editorType () {
     return this._oriComp.eqxScene.meta.type
   }
+  /**
+   * 更新组件内容
+   * @param compJson 组件属性 @params: Object
+   */
+  public updateCompContent(compJson: EqxCompJson) {
+    if(compJson.hasOwnProperty('content')) {
+      this.updateContent(compJson.content)
+    }
+    if(compJson.hasOwnProperty('css')) {
+      this.updateStyle(compJson.css)
+    }
+    if(compJson.hasOwnProperty('properties')) {
+      const prop = compJson['properties']
+      prop.src && this.updateContent(prop.src)
+    }
+    if(this.type === compType.EqxInteractiveVideo){
+      compJson.hasOwnProperty('src') && this.updateContent(compJson.src)
+    }
+
+  }
+
   // 更新内容
-  updateContent(content: string) {
+  updateContent(content: string | undefined): void {
     // ...
-    const oriUpdateContent = this._oriComp.updateContent.bind(this._oriComp) || (() => {console.warn('no update content method!')})
-    oriUpdateContent(content)
+    const defaultAction = () => {console.warn('no update content method!')}
+    const action = {
+      [compType.EqxNewText]: this._oriComp.updateContent?.bind(this._oriComp) || defaultAction,
+      [compType.EqxImage]: this._oriComp.replaceImageSrc?.bind(this._oriComp) || defaultAction,
+      [compType.EqxInteractiveVideo]: this._oriComp.replaceImageSrc?.bind(this._oriComp) || defaultAction,
+    }
+    // const oriUpdateContent = this._oriComp.updateContent.bind(this._oriComp) || (() => {console.warn('no update content method!')})
+    // oriUpdateContent(content)
+    action?.[this.type]?.(content)
   }
   updateAttr () {}
   // 更新样式
   updateStyle(style: any = {}) {
-    // ...
-    const oriUpdateCss = this._oriComp.update$ContentCss.bind(this._oriComp) || (() => {
-      console.warn('no update css method!');
-    });
-    oriUpdateCss(style);
+    const defaultAction = () => {console.warn('no update css method!');}
+    const action = {
+      [compType.EqxNewText]: this._oriComp.update$ContentCss.bind(this._oriComp) || defaultAction,
+      [compType.EqxImage]: (style: any = {}) => {
+        const oriUpdateCss = this._oriComp.updateSize?.bind(this._oriComp) || defaultAction
+        const oldStyle = {}
+        oriUpdateCss(oldStyle, style)
+      },
+    }
+    // // ...
+    // const oriUpdateCss = this._oriComp.update$ContentCss.bind(this._oriComp) || (() => {
+    //   console.warn('no update css method!');
+    // });
+    // oriUpdateCss(style);
+    action?.[this.type]?.(style)
   }
   /**
    * 绑定事件
@@ -81,6 +120,11 @@ export default class CompService extends EqxCustomMgrServ {
   public transAndSave = (oriComp: EqxComp) => {
     this.compList.push(this._transComp(oriComp))
   }
-
-//   public 
+  /**
+   * 获取组件列表
+   * @returns 
+   */
+  public getCompList = () => {
+    return this.compList
+  }
 }

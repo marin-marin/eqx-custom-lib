@@ -11,6 +11,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'customLib.js'
     },
+    devServer: {
+        port: 3443
+    },
     devtool: 'source-map',
     module: {
         rules: [
