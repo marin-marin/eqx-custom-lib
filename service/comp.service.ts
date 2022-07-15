@@ -34,7 +34,7 @@ class CustomComp {
     compJson.properties && this.updateCompJsonAttr(compJson.properties)
 
     this.updateContent(compJson)
-    // this.updateStyle(compJson.css)
+    this.updateStyle(compJson.css)
   }
   private updateCompJsonCss(css: any = {}) {
     this._oriComp?.updateCompJsonCss(css)
@@ -44,18 +44,18 @@ class CustomComp {
   }
 
   // 更新内容
-  private updateContent(compJson: any={}): void {
+  private updateContent(compJson: EqxCompJson): void {
     // ...
     const defaultAction = () => {console.warn('no update content method!')}
     
     // 文本组件处理
-    const handleEqxNewText = (compJson: any ={}) => {
+    const handleEqxNewText = (compJson: EqxCompJson) => {
       if(!compJson.content) return
       this._oriComp.updateContent?.(compJson.content) || defaultAction
     }
 
     // 图片组件处理
-    const handleEqxImage = (compJson: any={}) => {
+    const handleEqxImage = (compJson: EqxCompJson) => {
       if(!compJson.src) return
       const imageProp = {
         src: compJson?.src || '',
@@ -65,7 +65,7 @@ class CustomComp {
     }
 
     // 视频组件处理
-    const handleEqxInteractiveVideo = (compJson: any={}) => {
+    const handleEqxInteractiveVideo = (compJson: EqxCompJson) => {
       if(!compJson.src) return
       const video = {
         src: compJson?.src || '',
@@ -74,14 +74,14 @@ class CustomComp {
     }
 
     // 下拉框组件处理
-    const handleEqxDropDownList = (compJson: any={}) => {
+    const handleEqxDropDownList = (compJson: EqxCompJson) => {
       // 更新组件compJson的choices
       this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
       this._oriComp?.changeOption?.()
     }
 
     // 单选框和多选框按钮组件更新
-    const handleEqxRadio = (compJson: any={}) => {
+    const handleEqxRadio = (compJson: EqxCompJson) => {
       // 更新组件compJson的choices
       this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
       this._oriComp?.updateOptions?.()
@@ -99,18 +99,24 @@ class CustomComp {
     action?.[this.type]?.(compJson)
   }
   // 更新样式
-  updateStyle(style: any = {}) {
+  public updateStyle(style: object): void {
     const defaultAction = () => {console.warn('no update css method!');}
-    const action = {
-      [compType.EqxNewText]: this._oriComp.update$ContentCss.bind(this._oriComp) || defaultAction,
-      [compType.EqxImage]: (style: any = {}) => {
-        const oriUpdateCss = this._oriComp.updateSize?.bind(this._oriComp) || defaultAction
-        const oldStyle = {}
-        oriUpdateCss(oldStyle, style)
-      },
+
+    const handleEqxNewTextStyle = (style: any = {}) => {
+      this._oriComp?.update$ContentCss?.(style)
     }
 
-    action?.[this.type]?.(style)
+    const handleImageStyle = (style: any = {}) => {
+      const oldStyle = {}
+      this._oriComp?.updateSize?.(oldStyle, style)
+    }
+
+    const action = {
+      [compType.EqxNewText]: handleEqxNewTextStyle,
+      [compType.EqxImage]: handleImageStyle,
+    }
+
+    action?.[this.type]?.(style) 
   }
   /**
    * 绑定事件
