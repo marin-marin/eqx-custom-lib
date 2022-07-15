@@ -25,39 +25,79 @@ class CustomComp {
   }
   /**
    * 更新组件内容
-   * @param compJson 组件属性 @params: Object
+   * @param compJson 用户传递组件属性 @params: Object
    */
   public updateCompContent(compJson: EqxCompJson) {
-    if(compJson.hasOwnProperty('content')) {
-      this.updateContent(compJson.content)
-    }
-    if(compJson.hasOwnProperty('css')) {
-      this.updateStyle(compJson.css)
-    }
-    if(compJson.hasOwnProperty('properties')) {
-      const prop = compJson['properties']
-      prop.src && this.updateContent(prop.src)
-    }
-    if(this.type === compType.EqxInteractiveVideo){
-      compJson.hasOwnProperty('src') && this.updateContent(compJson.src)
-    }
+    // 1. 存在css属性， 则融合css样式，不是替代
+    compJson.css && this.updateCompJsonCss(compJson.css)
+    // 更新组件properties
+    compJson.properties && this.updateCompJsonAttr(compJson.properties)
 
+    this.updateContent(compJson)
+    // this.updateStyle(compJson.css)
+  }
+  private updateCompJsonCss(css: any = {}) {
+    this._oriComp?.updateCompJsonCss(css)
+  }
+  private updateCompJsonAttr (prop: any = {}) {
+    this._oriComp?.updateCompJsonProperties(prop)
   }
 
   // 更新内容
-  updateContent(content: string | undefined): void {
+  private updateContent(compJson: any={}): void {
     // ...
     const defaultAction = () => {console.warn('no update content method!')}
-    const action = {
-      [compType.EqxNewText]: this._oriComp.updateContent?.bind(this._oriComp) || defaultAction,
-      [compType.EqxImage]: this._oriComp.replaceImageSrc?.bind(this._oriComp) || defaultAction,
-      [compType.EqxInteractiveVideo]: this._oriComp.replaceImageSrc?.bind(this._oriComp) || defaultAction,
+    
+    // 文本组件处理
+    const handleEqxNewText = (compJson: any ={}) => {
+      if(!compJson.content) return
+      this._oriComp.updateContent?.(compJson.content) || defaultAction
     }
-    // const oriUpdateContent = this._oriComp.updateContent.bind(this._oriComp) || (() => {console.warn('no update content method!')})
-    // oriUpdateContent(content)
-    action?.[this.type]?.(content)
+
+    // 图片组件处理
+    const handleEqxImage = (compJson: any={}) => {
+      if(!compJson.src) return
+      const imageProp = {
+        src: compJson?.src || '',
+        originSrc: this._oriJson?.properties?.src
+      }
+      this._oriComp.editImage?.(imageProp) || defaultAction
+    }
+
+    // 视频组件处理
+    const handleEqxInteractiveVideo = (compJson: any={}) => {
+      if(!compJson.src) return
+      const video = {
+        src: compJson?.src || '',
+      }
+      this._oriComp.updateVideoSource?.(video) || defaultAction
+    }
+
+    // 下拉框组件处理
+    const handleEqxDropDownList = (compJson: any={}) => {
+      // 更新组件compJson的choices
+      this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
+      this._oriComp?.changeOption?.()
+    }
+
+    // 单选框和多选框按钮组件更新
+    const handleEqxRadio = (compJson: any={}) => {
+      // 更新组件compJson的choices
+      this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
+      this._oriComp?.updateOptions?.()
+    }
+
+    const action = {
+      [compType.EqxNewText]: handleEqxNewText,
+      [compType.EqxImage]: handleEqxImage,
+      [compType.EqxInteractiveVideo]: handleEqxInteractiveVideo,
+      [compType.EqxDropDownList]: handleEqxDropDownList,
+      [compType.EqxRadio]: handleEqxRadio,
+      [compType.EqxCheckbox]: handleEqxRadio,
+    }
+
+    action?.[this.type]?.(compJson)
   }
-  updateAttr () {}
   // 更新样式
   updateStyle(style: any = {}) {
     const defaultAction = () => {console.warn('no update css method!');}
@@ -69,11 +109,7 @@ class CustomComp {
         oriUpdateCss(oldStyle, style)
       },
     }
-    // // ...
-    // const oriUpdateCss = this._oriComp.update$ContentCss.bind(this._oriComp) || (() => {
-    //   console.warn('no update css method!');
-    // });
-    // oriUpdateCss(style);
+
     action?.[this.type]?.(style)
   }
   /**
@@ -126,5 +162,39 @@ export default class CompService extends EqxCustomMgrServ {
    */
   public getCompList = () => {
     return this.compList
+  }
+  /**
+   * 更新组件内容
+   * @param ids 
+   * @param compJson 
+   */
+  public updateCompsContent = (ids: string | string[], compJson: EqxCompJson) => {
+    // 多个组件批量更新
+    if(Array.isArray(ids)){
+      return this.compList.forEach((comp: any = {}) => {
+        ids.includes(comp.id) && (comp.updateCompContent(compJson))
+      })
+    }
+    // 单个组件更新
+    const targetComp = this.compList.find((x: any = {}) => x.id === ids)
+    targetComp && targetComp.updateCompContent(compJson)
+  }
+  /**
+   * 绑定组件事件
+   * @param ids 
+   * @param eventName 
+   * @param fn 
+   * @param isReset 
+   */
+  public bindCompsEvent = (ids: string | string[], eventName: string, fn: Function, isReset: boolean = false) => {
+      // 多个组件批量更新
+      if(Array.isArray(ids)){
+        return this.compList.forEach((comp: any = {}) => {
+          ids.includes(comp.id) && (comp.bindEvent(eventName, fn, isReset))
+        })
+      }
+      // 单个组件更新
+      const targetComp = this.compList.find((x: any = {}) => x.id === ids)
+      targetComp && targetComp.bindEvent(eventName, fn, isReset)
   }
 }

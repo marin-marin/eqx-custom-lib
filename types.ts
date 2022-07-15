@@ -8,6 +8,7 @@ export type EqxCompType = {
   'EqxInteractiveVideo': null | 'string',
 }
 export interface EqxCompJson {
+  'choices'?: any,
   'content'?: 'string',
   'css'?: any,
   'properties'?: any,
