@@ -24,12 +24,16 @@ class customPage {
   public compService: CompService | null = null
   // 渲染成功标志
   private _isRenderSuccess: Boolean = false
+
+  public getPageRenderSign() {
+    return this._isRenderSuccess
+  }
   // 设置page渲染成功标志
   public setPageRenderSign(v: Boolean) {
     this._isRenderSuccess = v
   }
   // 设置页面的原有comp
-  handleSetPageOriginComp() {
+  handleSetCompServiceOriginComp() {
 
   }
 }
