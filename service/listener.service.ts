@@ -8,22 +8,22 @@ export default class ListenerService extends EqxCustomMgrServ {
   /*
         需要在编辑器中调用该方法注册
       */
-  public registerDep = (event: EqxLifeCycleEventName) => {
-    if (!this._deps.has(event)) {
-      this._deps.set(event, [])
-    }
-    return this._deps.get(event)
+  public registerDep = (event: EqxLifeCycleEventName, fn: any = () => {}) =>{
+    let events = this._deps.get(event) || []
+    events.push(fn)
+    this._deps.set(event, events)
+    return true
   }
 
   /**
    * Eqx作品调用触发事件通知
    * @param event
    */
-  public notifyDep = (event: EqxLifeCycleEventName) => {
+  public notifyDep = (event: EqxLifeCycleEventName, arg: any={}) => {
     const fns = this._deps.get(event) || []
     fns.forEach(fn => {
       fn instanceof Function
-        ? fn()
+        ? fn(arg)
         : console.warn('Callback must be a function.')
     })
   }

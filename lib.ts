@@ -1,4 +1,5 @@
-import CompService from "./service/comp.service"
+// import CompService from "./service/comp.service"
+import PageService from "./service/page.service"
 import ControlService from "./service/control.service"
 import ListenerService from "./service/listener.service"
 import { EqxScene } from "./types";
@@ -11,11 +12,13 @@ export default class EqxCustomManager {
     private _id : string|number = ''
 
     public listenerService: ListenerService
-    public compService: CompService | null = null
+    // public compService: CompService | null = null
+    public PageService: PageService | null = null
     public controlService: ControlService | null = null
 
     public init = (eqxScene: EqxScene) => {
-        this.compService = new CompService(eqxScene)
+        // this.compService = new CompService(eqxScene)
+        this.PageService = new PageService(eqxScene)
         this.controlService = new ControlService(eqxScene)
         this.listenerService.initScene(eqxScene)
 

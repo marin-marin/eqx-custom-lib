@@ -1,5 +1,6 @@
 export type EqxScene = any
 export type EqxComp = any
+export type EqxPage = any
 export type EqxLifeCycleEventName = string
 
 export type EqxCompType = {
@@ -8,6 +9,8 @@ export type EqxCompType = {
   'EqxInteractiveVideo': null | 'string',
 }
 export interface EqxCompJson {
+  'id'?: string, 
+  'type'?: string,
   'choices'?: any,
   'content'?: 'string',
   'css'?: any,

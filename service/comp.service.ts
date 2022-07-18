@@ -1,33 +1,41 @@
 import EqxCustomMgrServ from './base.service'
 import '../types.ts'
-import { EqxComp, EqxScene, EqxCompJson } from '../types'
+import { EqxComp, EqxScene, EqxCompJson, EqxPage } from '../types'
 import { compType } from '../const/h5'
 
 /**
  * 定制Comp
  */
 class CustomComp {
-  constructor(oriComp: EqxComp) {
-    this._oriComp = oriComp
+  constructor(c: EqxComp | EqxCompJson) {
+    // 如果当前的c存在compJson，则当前是组件， 否则当前是compJson
+    if(c && c.compJson) {
+      this._oriComp = c
+      this._oriJson = c.compJson
+    }else {
+      this._oriJson = c
+    }
   }
-  private _oriComp: EqxComp
-  private get _oriJson() {
-    return this._oriComp.compJson
-  }
+  private _oriComp: EqxComp = {}
+  private _oriJson: EqxCompJson = {}
+  // private get _oriJson() {
+  //   return this._oriComp.compJson
+  // }
   private get id() {
-    return this._oriComp.id
+    return this._oriComp?.id || this._oriJson.id
   }
   private get type() {
-    return this._oriComp.type
+    return this._oriComp?.type || this._oriJson.type
   }
+  // 暂未使用
   private get editorType () {
-    return this._oriComp.eqxScene.meta.type
+    return this._oriComp?.eqxScene?.meta?.type || 'h5'
   }
   /**
    * 更新组件内容
    * @param compJson 用户传递组件属性 @params: Object
    */
-  public updateCompContent(compJson: EqxCompJson) {
+  public update(compJson: EqxCompJson) {
     // 1. 存在css属性， 则融合css样式，不是替代
     compJson.css && this.updateCompJsonCss(compJson.css)
     // 更新组件properties
@@ -36,6 +44,7 @@ class CustomComp {
     this.updateContent(compJson)
     this.updateStyle(compJson.css)
   }
+  
   private updateCompJsonCss(css: any = {}) {
     this._oriComp?.updateCompJsonCss(css)
   }
@@ -114,6 +123,7 @@ class CustomComp {
     const action = {
       [compType.EqxNewText]: handleEqxNewTextStyle,
       [compType.EqxImage]: handleImageStyle,
+      [compType.EqxInteractiveVideo]: handleImageStyle,
     }
 
     action?.[this.type]?.(style) 
@@ -133,23 +143,24 @@ class CustomComp {
   }
 }
 
-export default class CompService extends EqxCustomMgrServ {
-  constructor (eqxScene: EqxScene) {
-    super(eqxScene)
+export default class CompService {
+  constructor (eqxPage: EqxPage) {
     
-    // TODO: 区分不同编辑器的组件转化
+    // 存在layer, 则通过layer转换，否则通过compJson来转换
     // page -> layer -> comp 转化
-    this._eqxScene.eqxPageList.forEach((page: any) => {
-        page.eqxLayerList.forEach((layer: any) => {
-            layer.eqxItems.forEach((comp: EqxComp) => {
-                this.transAndSave(comp)
-            })
-        })
-    })
+    if(eqxPage.eqxLayerList.length) {
+      eqxPage.eqxLayerList.forEach((layer: any) => {
+        layer.eqxItems.forEach((comp: EqxComp) => {
+              this.transAndSave(comp)
+          })
+      })
+    }else {
+      eqxPage.pageJson && eqxPage.pageJson.elements.forEach((compJson: any = {}) => {
+        this.transAndSave(compJson)
+      })
+    }
   }
-
   public compList: CustomComp[] = []
-
   /**
    * 将 Eqx组件 转化为 CustomComp 的方法
    * @param oriComp
@@ -178,12 +189,12 @@ export default class CompService extends EqxCustomMgrServ {
     // 多个组件批量更新
     if(Array.isArray(ids)){
       return this.compList.forEach((comp: any = {}) => {
-        ids.includes(comp.id) && (comp.updateCompContent(compJson))
+        ids.includes(comp.id) && (comp.update(compJson))
       })
     }
     // 单个组件更新
     const targetComp = this.compList.find((x: any = {}) => x.id === ids)
-    targetComp && targetComp.updateCompContent(compJson)
+    targetComp && targetComp.update(compJson)
   }
   /**
    * 绑定组件事件
