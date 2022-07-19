@@ -1,19 +1,25 @@
 // import CompService from "./service/comp.service"
 import PageService from "./service/page.service"
 import ControlService from "./service/control.service"
+import DialogService from "./service/dialog.service";
 import ListenerService from "./service/listener.service"
 import { EqxScene } from "./types";
+import CompService from "./service/comp.service";
 
 export default class EqxCustomManager {
     constructor () {
         this.listenerService = new ListenerService()
+        this.DialogService = new DialogService()
         this.initGlobalObj()
     }
+
     private _id : string|number = ''
 
     public listenerService: ListenerService
     // public compService: CompService | null = null
     public pageService: PageService | null = null
+    public DialogService: DialogService
+    public compService: CompService | null = null
     public controlService: ControlService | null = null
 
     public init = (eqxScene: EqxScene) => {
