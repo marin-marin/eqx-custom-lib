@@ -1,0 +1,157 @@
+@charset "UTF-8";
+.cus-dialog {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background-color: rgba(25, 28, 34, 0.88);
+  text-align: center;
+  color: #4c5161;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: auto;
+  z-index: 999;
+  &.cus-dialog-animation {
+    opacity: 0;
+    animation: fadeIn .2s both;
+  }
+  &.cus-dialog-animation__close {
+    animation: fadeIn .2s both reverse;
+  }
+
+  .cus-dialog__wrap {
+    display: inline-block;
+    margin-top: 10vh;
+    text-align: left;
+    width: calc(100vw - 32px);
+    border-radius: 12px;
+    background-color: #f7f9fa;
+    vertical-align: middle;
+    white-space: normal;
+    outline: none;
+    position: relative;
+    .cus-dialog__icon {
+      position: absolute;
+      top: -30px;
+      left: calc(50% - 25px);
+      width: 40px;
+      background: linear-gradient(to bottom, #f7f9fa 50%, transparent 51%, transparent);
+      padding: 10px;
+      border-radius: 50%;
+      fill: #1261ef;
+      &.success {
+        fill: #1ec7b2;
+      }
+      &.error {
+        fill: #ff5448;
+      }
+      &.warning {
+        fill: #f8ae15;
+      }
+    }
+    .cus-dialog__title {
+      margin: 0;
+      line-height: 30px;
+      padding: 20px 50px 0 25px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #4c5161;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      cursor: default;
+      &:empty {
+        padding: 0;
+        ~ .cus-dialog__body {
+          min-height: 40px;
+          padding-top: 30px;
+        }
+      }
+    }
+
+    .cus-dialog__close {
+      position: absolute;
+      top: 8px;
+      right: 7px;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      background: none;
+      transition: fill 0.2s;
+      fill: #b6bbc6;
+      cursor: pointer;
+      z-index: 1;
+      > svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .cus-dialog__close:hover {
+      background-color: #4c5161;
+      background-color: rgba(0, 0, 0, 0);
+      fill: #4c5161;
+    }
+    .cus-dialog__body {
+      min-height: 60px;
+      padding: 10px 25px 20px;
+    }
+
+    .cus-dialog__body:after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+    .cus-dialog__footer {
+      padding: 3px 16px 16px;
+      margin-top: -3px;
+      text-align: center;
+      max-height: 40px;
+      opacity: 1;
+      transition: max-height 0.2s, opacity 0.2s 0.1s;
+      overflow: hidden;
+      .cus-dialog__button {
+        width: calc(100% - 16px);
+        height: 32px;
+        line-height: 32px;
+        border: 1px solid #1261ef;
+        outline: none;
+        border-radius: 16px;
+        background: #fff;
+        color: #333;
+        &[data-type='primary'] {
+          background: #1261ef;
+          color: #fff;
+          border-color: #1261ef;
+        }
+        &[data-type='danger'] {
+          background: #eb4646;
+          color: #fff;
+          border-color: #eb4646;
+        }
+      }
+    }
+
+    .cus-dialog__footer:empty {
+      max-height: 0;
+      opacity: 0;
+    }
+  }
+}
+
+.cus-dialog:not([open]) {
+  display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
