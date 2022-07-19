@@ -3,16 +3,11 @@ export type EqxComp = any
 export type EqxPage = any
 export type EqxLifeCycleEventName = string
 
-export type EqxCompType = {
-  'EqxNewText': null | 'string', 
-  'EqxImage': null | 'string',
-  'EqxInteractiveVideo': null | 'string',
-}
 export interface EqxCompJson {
   'id'?: string, 
   'type'?: string,
   'choices'?: any,
-  'content'?: 'string',
+  'content'?: string,
   'css'?: any,
   'properties'?: any,
   'src'?: string

@@ -1,4 +1,3 @@
-// import { EqxCompType } from '../types'
 
 export const EqxNewText:string = '7' // 文本组件
 export const EqxImage:string = '4'  // 图片组件

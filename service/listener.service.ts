@@ -27,4 +27,11 @@ export default class ListenerService extends EqxCustomMgrServ {
         : console.warn('Callback must be a function.')
     })
   }
+  /**
+   * 注销事件 
+   * @param event 
+   */
+  public destroyDep = (event: EqxLifeCycleEventName) => {
+    this._deps.delete(event)
+  }
 }

@@ -2,6 +2,7 @@ import EqxCustomMgrServ from './base.service'
 import '../types.ts'
 import { EqxComp, EqxScene, EqxCompJson, EqxPage } from '../types'
 import { compType } from '../const/h5'
+import { PRODUCT_TYPE } from '../const/const'
 
 /**
  * 定制Comp
@@ -29,13 +30,20 @@ class CustomComp {
   }
   // 暂未使用
   private get editorType () {
-    return this._oriComp?.eqxScene?.meta?.type || 'h5'
+    return this._oriComp?.eqxScene?.meta?.type || PRODUCT_TYPE.h5
+  }
+  // 设置originComp
+  public handleSetOriginComp(oriComp: EqxComp) {
+    this._oriComp = oriComp
   }
   /**
    * 更新组件内容
    * @param compJson 用户传递组件属性 @params: Object
    */
   public update(compJson: EqxCompJson) {
+    // 1. 当前上下文 
+    // 2. 当前函数
+    console.log('arguments.callee', arguments.callee)
     // 1. 存在css属性， 则融合css样式，不是替代
     compJson.css && this.updateCompJsonCss(compJson.css)
     // 更新组件properties
@@ -145,22 +153,57 @@ class CustomComp {
 
 export default class CompService {
   constructor (eqxPage: EqxPage) {
-    
-    // 存在layer, 则通过layer转换，否则通过compJson来转换
-    // page -> layer -> comp 转化
-    if(eqxPage.eqxLayerList.length) {
-      eqxPage.eqxLayerList.forEach((layer: any) => {
-        layer.eqxItems.forEach((comp: EqxComp) => {
-              this.transAndSave(comp)
-          })
-      })
+    this._eqxPage = eqxPage
+
+    if(eqxPage.getPageRenderSign()) {
+      this.transH5CompsByLayerList(eqxPage.getOriginPage())
     }else {
-      eqxPage.pageJson && eqxPage.pageJson.elements.forEach((compJson: any = {}) => {
-        this.transAndSave(compJson)
-      })
+      this.transH5CompsByPageJson(eqxPage.getOriginPage())
     }
   }
+  private _eqxPage: EqxPage
   public compList: CustomComp[] = []
+
+  public transH5CompsByLayerList = (eqxPage: EqxPage) => {
+    if(eqxPage.eqxScene?.meta?.type !== PRODUCT_TYPE.h5) return
+    
+    eqxPage.eqxLayerList.forEach((layer: any) => {
+      layer.eqxItems.forEach((comp: EqxComp) => {
+            this.transAndSave(comp)
+        })
+    })
+  }
+
+  public transH5CompsByPageJson = (eqxPage: EqxPage) => {
+    if(eqxPage.eqxScene?.meta?.type !== PRODUCT_TYPE.h5) return
+    
+    eqxPage.pageJson && eqxPage.pageJson.elements.forEach((compJson: any = {}) => {
+      this.transAndSave(compJson)
+    })
+  }
+
+  /**
+   * 在compService中的comp组件存储 源comp(h5作品对应的comp)
+   * @param eqxPage 
+   */
+  public saveEqxSourceComp(eqxPage: EqxPage) {
+    return new Promise((resolve, reject) => {
+      // 获取eqx的page
+      const eqxSourcePage =  eqxPage.getOriginPage()
+      if(!eqxSourcePage) {
+        reject(new Error('未挂载源页面'))
+      } 
+      
+      eqxSourcePage.eqxLayerList.forEach((layer: any) => {
+        layer.eqxItems.forEach((comp: EqxComp, index: number) => {
+            // 数组一一映射  
+            this.compList?.[index]?.handleSetOriginComp(comp)
+          })
+      })
+      resolve(true)
+    })
+  }
+
   /**
    * 将 Eqx组件 转化为 CustomComp 的方法
    * @param oriComp
@@ -179,6 +222,21 @@ export default class CompService {
    */
   public getCompList = () => {
     return this.compList
+  }
+  /**
+   * 
+   * 更新组件内容
+   * @param ids string | string[]
+   * @param compJson EqxCompJson
+   *
+   */
+  public update(...args: any) {
+    // 1. 当前页面渲染成功， 直接执行
+    if(this._eqxPage.getPageRenderSign()){
+      return this.updateCompsContent(args[0], args[1]);
+    }
+    // 2. 缓存用户的update函数， 等渲染成功之后再执行
+    this._eqxPage.listenerService.registerDep(this._eqxPage.pageId, this.update.bind(this, ...args));
   }
   /**
    * 更新组件内容

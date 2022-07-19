@@ -13,12 +13,13 @@ export default class EqxCustomManager {
 
     public listenerService: ListenerService
     // public compService: CompService | null = null
-    public PageService: PageService | null = null
+    public pageService: PageService | null = null
     public controlService: ControlService | null = null
 
     public init = (eqxScene: EqxScene) => {
+        console.log('pageInit')
         // this.compService = new CompService(eqxScene)
-        this.PageService = new PageService(eqxScene)
+        this.pageService = new PageService(eqxScene)
         this.controlService = new ControlService(eqxScene)
         this.listenerService.initScene(eqxScene)
 
