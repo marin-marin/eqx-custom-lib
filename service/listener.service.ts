@@ -12,6 +12,7 @@ export default class ListenerService extends EqxCustomMgrServ {
     let events = this._deps.get(event) || []
     events.push(fn)
     this._deps.set(event, events)
+    console.log('_deps',  this._deps)
     return true
   }
 

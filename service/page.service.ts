@@ -70,21 +70,21 @@ export default class PageService extends EqxCustomMgrServ {
 
     this.initPageList()
   }
-  public pageList: EqxPage = []
+  private _pageList: EqxPage = []
 
   /**
    * 初始化pageList
    */
   private initPageList() {
     this._eqxScene?.eqxPageList?.forEach((page: any= {}) => {
-      this.pageList.push(new customPage(page))
+      this._pageList.push(new customPage(page))
     })
   }
   /**
    * 获取页面列表
    * @returns 
    */
-    public getPageList = () => {
-      return this.pageList
-    }
+  public getPageList = () => {
+    return this._pageList
+  }
 }

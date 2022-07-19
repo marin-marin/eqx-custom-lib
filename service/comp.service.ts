@@ -8,20 +8,21 @@ import { PRODUCT_TYPE } from '../const/const'
  * 定制Comp
  */
 class CustomComp {
-  constructor(c: EqxComp | EqxCompJson) {
-    // 如果当前的c存在compJson，则当前是组件， 否则当前是compJson
+  constructor(c: EqxComp | EqxCompJson, eqxPage: EqxPage) {
+    // 如果当前的c存在compJson，则当前是完整的组件对象， 否则当前是compJson对象
     if(c && c.compJson) {
       this._oriComp = c
       this._oriJson = c.compJson
     }else {
       this._oriJson = c
     }
+
+    this._eqxPage = eqxPage
   }
   private _oriComp: EqxComp = {}
   private _oriJson: EqxCompJson = {}
-  // private get _oriJson() {
-  //   return this._oriComp.compJson
-  // }
+  private _eqxPage: EqxPage
+
   private get id() {
     return this._oriComp?.id || this._oriJson.id
   }
@@ -40,10 +41,12 @@ class CustomComp {
    * 更新组件内容
    * @param compJson 用户传递组件属性 @params: Object
    */
-  public update(compJson: EqxCompJson) {
-    // 1. 当前上下文 
-    // 2. 当前函数
-    console.log('arguments.callee', arguments.callee)
+  public update(compJson: EqxCompJson): any {
+    // 1. 当前页面没有渲染成功， 缓存后续执行
+    if(!this._eqxPage.getPageRenderSign()){
+      return this._eqxPage.listenerService.registerDep(this._eqxPage.pageId, this.update.bind(this, compJson));
+    }
+
     // 1. 存在css属性， 则融合css样式，不是替代
     compJson.css && this.updateCompJsonCss(compJson.css)
     // 更新组件properties
@@ -120,6 +123,7 @@ class CustomComp {
     const defaultAction = () => {console.warn('no update css method!');}
 
     const handleEqxNewTextStyle = (style: any = {}) => {
+      // 暂不兼容height 和 lineHeight 和 position等属性处理
       this._oriComp?.update$ContentCss?.(style)
     }
 
@@ -210,7 +214,7 @@ export default class CompService {
    * @returns
    */
   private _transComp: (EqxComp: EqxComp) => CustomComp = oriComp => {
-    return new CustomComp(oriComp)
+    return new CustomComp(oriComp, this._eqxPage)
   }
 
   public transAndSave = (oriComp: EqxComp) => {
@@ -230,20 +234,20 @@ export default class CompService {
    * @param compJson EqxCompJson
    *
    */
-  public update(...args: any) {
+  public update(ids: string | string[], compJson: EqxCompJson) {
     // 1. 当前页面渲染成功， 直接执行
     if(this._eqxPage.getPageRenderSign()){
-      return this.updateCompsContent(args[0], args[1]);
+      return this.updateCompsContent(ids, compJson);
     }
     // 2. 缓存用户的update函数， 等渲染成功之后再执行
-    this._eqxPage.listenerService.registerDep(this._eqxPage.pageId, this.update.bind(this, ...args));
+    this._eqxPage.listenerService.registerDep(this._eqxPage.pageId, this.update.bind(this, ids, compJson));
   }
   /**
    * 更新组件内容
    * @param ids 
    * @param compJson 
    */
-  public updateCompsContent = (ids: string | string[], compJson: EqxCompJson) => {
+  private updateCompsContent = (ids: string | string[], compJson: EqxCompJson) => {
     // 多个组件批量更新
     if(Array.isArray(ids)){
       return this.compList.forEach((comp: any = {}) => {
