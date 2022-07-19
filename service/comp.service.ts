@@ -1,7 +1,7 @@
 import EqxCustomMgrServ from './base.service'
 import '../types.ts'
 import { EqxComp, EqxScene, EqxCompJson, EqxPage } from '../types'
-import { compType } from '../const/h5'
+import { compType, EQX_FORM_COMP_TYPE } from '../const/h5'
 import { PRODUCT_TYPE } from '../const/const'
 
 /**
@@ -54,6 +54,7 @@ class CustomComp {
 
     this.updateContent(compJson)
     this.updateStyle(compJson.css)
+    this.updateAttr(compJson.properties)
   }
   
   private updateCompJsonCss(css: any = {}) {
@@ -95,6 +96,8 @@ class CustomComp {
 
     // 下拉框组件处理
     const handleEqxDropDownList = (compJson: EqxCompJson) => {
+      if(!compJson.choices) return;
+
       // 更新组件compJson的choices
       this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
       this._oriComp?.changeOption?.()
@@ -102,6 +105,8 @@ class CustomComp {
 
     // 单选框和多选框按钮组件更新
     const handleEqxRadio = (compJson: EqxCompJson) => {
+      if(!compJson.choices) return
+
       // 更新组件compJson的choices
       this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
       this._oriComp?.updateOptions?.()
@@ -120,7 +125,6 @@ class CustomComp {
   }
   // 更新样式
   public updateStyle(style: object): void {
-    const defaultAction = () => {console.warn('no update css method!');}
 
     const handleEqxNewTextStyle = (style: any = {}) => {
       // 暂不兼容height 和 lineHeight 和 position等属性处理
@@ -140,6 +144,23 @@ class CustomComp {
 
     action?.[this.type]?.(style) 
   }
+
+  // 更新属性
+  public updateAttr(prop: object) {
+    const updateFormValidateRule = (prop: object) => {
+      // 1. 更改是否必填校验
+     Object.assign(this._oriComp, prop);
+    }
+    const isFormComp = () => {
+      return Object.values(EQX_FORM_COMP_TYPE)?.includes(this.type)
+    }
+    if(isFormComp()) {
+      return updateFormValidateRule(prop)
+    }
+
+
+  }
+
   /**
    * 绑定事件
    * @param eventName
