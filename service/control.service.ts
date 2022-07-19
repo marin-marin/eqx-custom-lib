@@ -1,8 +1,8 @@
 import EqxCustomMgrServ from "./base.service"
 
 export default class ControlService extends EqxCustomMgrServ {
-    public execCmd = (cmdName: string) => {
-      this.scene?.execCustomCmd(cmdName)
+    public execCmd = (cmdName: string, args: any) => {
+      this.scene?.execCustomCmd(cmdName, args)
     }
 
     /**

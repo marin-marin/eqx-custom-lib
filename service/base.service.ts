@@ -22,9 +22,9 @@ class CustomScene {
   }
 
   // TODO: 分化不同编辑器的能力
-  execCustomCmd (cmdName: string) {
-    if (cmdName in this.cmdList) {
-      this._eqxScene.execCmd(cmdName)
+  execCustomCmd (cmdName: string, args: any) {
+    if (this.cmdList.includes(cmdName)) {
+      this._eqxScene?.execCmd(cmdName, args)
     } else {
       console.warn('[EqxCustomManager] Cmd Not Supported!')
     }

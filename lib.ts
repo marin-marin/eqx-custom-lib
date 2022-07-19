@@ -9,7 +9,7 @@ import CompService from "./service/comp.service";
 export default class EqxCustomManager {
     constructor () {
         this.listenerService = new ListenerService()
-        this.DialogService = new DialogService()
+        this.dialogService = new DialogService()
         this.initGlobalObj()
     }
 
@@ -18,7 +18,7 @@ export default class EqxCustomManager {
     public listenerService: ListenerService
     // public compService: CompService | null = null
     public pageService: PageService | null = null
-    public DialogService: DialogService
+    public dialogService: DialogService
     public compService: CompService | null = null
     public controlService: ControlService | null = null
 
