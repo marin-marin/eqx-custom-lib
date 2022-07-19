@@ -50,3 +50,5 @@ export type DialogOptions = {
     onHide?: Function
     onRemove?: Function
 }
+
+export type ListenerFnObj = {fn: Function, once?: boolean}
