@@ -26,7 +26,7 @@ export default class ListenerService extends EqxCustomMgrServ {
    * Eqx作品调用触发事件通知
    * @param event
    */
-  public notifyDep = (event: EqxLifeCycleEventName, args: any[] = []) => {
+  public notifyDep = (event: EqxLifeCycleEventName, ...args: any[]) => {
     const fns = this._deps.get(event) || []
     const refreshFns: ListenerFnObj[] = []
     fns.forEach((fnObj) => {

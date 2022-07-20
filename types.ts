@@ -3,13 +3,18 @@ export type EqxComp = any
 export type EqxPage = any
 export type EqxLifeCycleEventName = string
 
+export interface EqxProperties {
+  required?: boolean,
+  disabled?: boolean
+}
+
 export interface EqxCompJson {
   'id'?: string, 
   'type'?: string,
   'choices'?: any,
   'content'?: string,
   'css'?: any,
-  'properties'?: any,
+  'properties'?: EqxProperties,
   'src'?: string
 }
 

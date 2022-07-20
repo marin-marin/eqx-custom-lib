@@ -8,7 +8,7 @@ import { PRODUCT_TYPE } from '../const/const'
  * 定制Comp
  */
 class CustomComp {
-  constructor(c: EqxComp | EqxCompJson, eqxPage: EqxPage) {
+  constructor(c: EqxComp | object, eqxPage: EqxPage) {
     // 如果当前的c存在compJson，则当前是完整的组件对象， 否则当前是compJson对象
     if(c && c.compJson) {
       this._oriComp = c
@@ -20,7 +20,7 @@ class CustomComp {
     this._eqxPage = eqxPage
   }
   private _oriComp: EqxComp = {}
-  private _oriJson: EqxCompJson = {}
+  private _oriJson: any = {}
   private _eqxPage: EqxPage
 
   private get id() {
@@ -54,7 +54,7 @@ class CustomComp {
 
     this.updateContent(compJson)
     this.updateStyle(compJson.css)
-    this.updateAttr(compJson.properties)
+    compJson.properties && this.updateAttr(compJson.properties)
   }
   
   private updateCompJsonCss(css: any = {}) {
@@ -150,15 +150,18 @@ class CustomComp {
     const updateFormValidateRule = (prop: object) => {
       // 1. 更改是否必填校验
      Object.assign(this._oriComp, prop);
+     // 2，处理disabled
+     const _c = prop.hasOwnProperty('disabled') && this._oriComp.handleSetContextDisabled
+     _c && this._oriComp.handleSetContextDisabled()
     }
+
     const isFormComp = () => {
       return Object.values(EQX_FORM_COMP_TYPE)?.includes(this.type)
     }
+
     if(isFormComp()) {
       return updateFormValidateRule(prop)
     }
-
-
   }
 
   /**

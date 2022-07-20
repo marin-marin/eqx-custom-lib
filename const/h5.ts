@@ -14,7 +14,7 @@ export const EqxInputDate:string = '505'  // 手机输入框
 
 export const EqxScore:string = 'a'  // 给个好评
 export const EqxSMS:string = '12'  // 验证码
-export const EqxSubmitButton:string = '6'  // 验证码
+export const EqxSubmitButton:string = '6'  // 提交按钮
 
 export const EQX_FORM_COMP_TYPE = {
   'EqxInput': EqxInput,
@@ -22,6 +22,10 @@ export const EQX_FORM_COMP_TYPE = {
   'EqxInputPhone': EqxInputPhone,
   'EqxInputEmail': EqxInputEmail,
   'EqxInputDate': EqxInputDate,
+  
+  'EqxDropDownList': EqxDropDownList,
+  'EqxRadio': EqxRadio,
+  'EqxCheckbox': EqxCheckbox,
 
   'EqxScore': EqxScore,
   'EqxSMS': EqxSMS,
@@ -33,8 +37,5 @@ export const compType = {
   'EqxNewText': EqxNewText ,
   'EqxImage': EqxImage,
   'EqxInteractiveVideo': EqxInteractiveVideo,
-  'EqxDropDownList': EqxDropDownList,
-  'EqxRadio': EqxRadio,
-  'EqxCheckbox': EqxCheckbox,
   ...EQX_FORM_COMP_TYPE
 }
