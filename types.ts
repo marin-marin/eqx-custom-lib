@@ -3,6 +3,17 @@ export type EqxComp = any
 export type EqxPage = any
 export type EqxLifeCycleEventName = string
 
+export interface EqxContainerStyle {
+  zIndex?: number,
+  width?: number,
+  height?: number,
+  opacity?: number,
+  top?: number,
+  left?: number,
+  transform?: string,
+}
+
+
 export interface EqxProperties {
   required?: boolean,
   disabled?: boolean

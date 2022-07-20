@@ -1,4 +1,4 @@
-import EqxCustomMgrServ from './base.service'
+import StyleService from './style.service'
 import '../types.ts'
 import { EqxComp, EqxScene, EqxCompJson, EqxPage } from '../types'
 import { compType, EQX_FORM_COMP_TYPE } from '../const/h5'
@@ -18,10 +18,12 @@ class CustomComp {
     }
 
     this._eqxPage = eqxPage
+    this._styleService = new StyleService(this)
   }
   private _oriComp: EqxComp = {}
   private _oriJson: any = {}
   private _eqxPage: EqxPage
+  private _styleService: StyleService
 
   private get id() {
     return this._oriComp?.id || this._oriJson.id
@@ -47,13 +49,13 @@ class CustomComp {
       return this._eqxPage.listenerService.registerDep(this._eqxPage.pageId, this.update.bind(this, compJson));
     }
 
-    // 1. 存在css属性， 则融合css样式，不是替代
-    compJson.css && this.updateCompJsonCss(compJson.css)
-    // 更新组件properties
-    compJson.properties && this.updateCompJsonAttr(compJson.properties)
+    // compJson.css && this.updateCompJsonCss(compJson.css)
+    // compJson.properties && this.updateCompJsonAttr(compJson.properties)
 
     this.updateContent(compJson)
-    this.updateStyle(compJson.css)
+    // this.updateStyle(compJson.css)
+    compJson.css && this._styleService.updateStyle(compJson.css)
+
     compJson.properties && this.updateAttr(compJson.properties)
   }
   

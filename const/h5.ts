@@ -39,3 +39,8 @@ export const compType = {
   'EqxInteractiveVideo': EqxInteractiveVideo,
   ...EQX_FORM_COMP_TYPE
 }
+
+// 组件$li影响的样式
+export const COMP_CONTAINER_STYLES = ['zIndex', 'width', 'height', 'opacity', 'top', 'left', 'transform']
+export const COMP_ELEMENT_BOX_STYLES = ['boxShadow', 'border', 'borderColor', 'borderWidth', 
+'borderRadius', 'borderStyle', 'textAlign', 'textDecoration', 'padding']
