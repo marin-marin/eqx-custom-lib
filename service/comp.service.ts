@@ -97,7 +97,7 @@ export default class CompService {
   public compList: CustomComp[] = []
 
   public transH5CompsByLayerList = (eqxPage: EqxPage) => {
-    if(eqxPage.eqxScene?.meta?.type !== PRODUCT_TYPE.h5) return
+    if(!(PRODUCT_TYPE?.h5?.includes(eqxPage.eqxScene?.meta?.type)) ) return
     
     eqxPage.eqxLayerList.forEach((layer: any) => {
       layer.eqxItems.forEach((comp: EqxComp) => {
@@ -107,7 +107,7 @@ export default class CompService {
   }
 
   public transH5CompsByPageJson = (eqxPage: EqxPage) => {
-    if(eqxPage.eqxScene?.meta?.type !== PRODUCT_TYPE.h5) return
+    if(!(PRODUCT_TYPE?.h5?.includes(eqxPage.eqxScene?.meta?.type)) ) return
     
     eqxPage.pageJson && eqxPage.pageJson.elements.forEach((compJson: any = {}) => {
       this.transAndSave(compJson)
