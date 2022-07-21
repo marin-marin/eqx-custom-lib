@@ -1,4 +1,5 @@
 import StyleService from './style.service'
+import CompActionService from './compAction.service'
 import '../types.ts'
 import { EqxComp, EqxScene, EqxCompJson, EqxPage } from '../types'
 import { compType, EQX_FORM_COMP_TYPE } from '../const/h5'
@@ -19,11 +20,13 @@ class CustomComp {
 
     this._eqxPage = eqxPage
     this._styleService = new StyleService(this)
+    this._compActionService = new CompActionService(this)
   }
   private _oriComp: EqxComp = {}
   private _oriJson: any = {}
   private _eqxPage: EqxPage
   private _styleService: StyleService
+  private _compActionService: CompActionService
 
   private get id() {
     return this._oriComp?.id || this._oriJson.id
@@ -49,14 +52,13 @@ class CustomComp {
       return this._eqxPage.listenerService.registerDep(this._eqxPage.pageId, this.update.bind(this, compJson));
     }
 
-    // compJson.css && this.updateCompJsonCss(compJson.css)
-    // compJson.properties && this.updateCompJsonAttr(compJson.properties)
+    this._compActionService.updateContent(compJson)
 
-    this.updateContent(compJson)
-    // this.updateStyle(compJson.css)
+    // 2. 更新属性
+    compJson.properties && this._compActionService.updateAttr(compJson.properties)
+    // 3. 更新样式
     compJson.css && this._styleService.updateStyle(compJson.css)
 
-    compJson.properties && this.updateAttr(compJson.properties)
   }
   
   private updateCompJsonCss(css: any = {}) {
@@ -64,106 +66,6 @@ class CustomComp {
   }
   private updateCompJsonAttr (prop: any = {}) {
     this._oriComp?.updateCompJsonProperties(prop)
-  }
-
-  // 更新内容
-  private updateContent(compJson: EqxCompJson): void {
-    // ...
-    const defaultAction = () => {console.warn('no update content method!')}
-    
-    // 文本组件处理
-    const handleEqxNewText = (compJson: EqxCompJson) => {
-      if(!compJson.content) return
-      this._oriComp.updateContent?.(compJson.content) || defaultAction
-    }
-
-    // 图片组件处理
-    const handleEqxImage = (compJson: EqxCompJson) => {
-      if(!compJson.src) return
-      const imageProp = {
-        src: compJson?.src || '',
-        originSrc: this._oriJson?.properties?.src
-      }
-      this._oriComp.editImage?.(imageProp) || defaultAction
-    }
-
-    // 视频组件处理
-    const handleEqxInteractiveVideo = (compJson: EqxCompJson) => {
-      if(!compJson.src) return
-      const video = {
-        src: compJson?.src || '',
-      }
-      this._oriComp.updateVideoSource?.(video) || defaultAction
-    }
-
-    // 下拉框组件处理
-    const handleEqxDropDownList = (compJson: EqxCompJson) => {
-      if(!compJson.choices) return;
-
-      // 更新组件compJson的choices
-      this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
-      this._oriComp?.changeOption?.()
-    }
-
-    // 单选框和多选框按钮组件更新
-    const handleEqxRadio = (compJson: EqxCompJson) => {
-      if(!compJson.choices) return
-
-      // 更新组件compJson的choices
-      this._oriComp?.updateCompJsonChoicesOptions?.(compJson.choices)
-      this._oriComp?.updateOptions?.()
-    }
-
-    const action = {
-      [compType.EqxNewText]: handleEqxNewText,
-      [compType.EqxImage]: handleEqxImage,
-      [compType.EqxInteractiveVideo]: handleEqxInteractiveVideo,
-      [compType.EqxDropDownList]: handleEqxDropDownList,
-      [compType.EqxRadio]: handleEqxRadio,
-      [compType.EqxCheckbox]: handleEqxRadio,
-    }
-
-    action?.[this.type]?.(compJson)
-  }
-  // 更新样式
-  public updateStyle(style: object): void {
-
-    const handleEqxNewTextStyle = (style: any = {}) => {
-      // 暂不兼容height 和 lineHeight 和 position等属性处理
-      this._oriComp?.update$ContentCss?.(style)
-    }
-
-    const handleImageStyle = (style: any = {}) => {
-      const oldStyle = {}
-      this._oriComp?.updateSize?.(oldStyle, style)
-    }
-
-    const action = {
-      [compType.EqxNewText]: handleEqxNewTextStyle,
-      [compType.EqxImage]: handleImageStyle,
-      [compType.EqxInteractiveVideo]: handleImageStyle,
-    }
-
-    action?.[this.type]?.(style) 
-  }
-
-  // 更新属性
-  public updateAttr(prop: object) {
-    const updateFormValidateRule = (prop: object) => {
-      // 1. 更改是否必填校验
-     Object.assign(this._oriComp, prop);
-     // 2，处理disabled
-     const _c = prop.hasOwnProperty('disabled') && this._oriComp.handleSetContextDisabled
-     _c && this._oriComp.handleSetContextDisabled()
-    }
-
-    const isFormComp = () => {
-      return Object.values(EQX_FORM_COMP_TYPE)?.includes(this.type)
-    }
-
-    if(isFormComp()) {
-      return updateFormValidateRule(prop)
-    }
   }
 
   /**

@@ -1,17 +1,18 @@
-import { EqxComp, EqxContainerStyle } from '../types'
+import { EqxComp } from '../types'
 import { compType, COMP_CONTAINER_STYLES, COMP_ELEMENT_BOX_STYLES } from '../const/h5'
 
-export default class EqxStyle {
-  constructor(customComp: object) {
-    this._comp = customComp;
+export default class CustomStyle {
+  constructor(customComp: any = {}) {
+    this._customComp = customComp;
   }
-  private _comp: EqxComp
-
+  private _customComp: any = {}
+  
   private get _oriComp() {
-    return this._comp._oriComp
+    return this._customComp._oriComp
   }
+
   private get type() {
-    return this._comp.type
+    return this._oriComp.type
   }
 
   private handleSeperateStyle(style: any = {}) {
@@ -37,6 +38,7 @@ export default class EqxStyle {
   public updateStyle(style: object) {
     const { containerStyle, elementBoxStyle, contentStyle } = this.handleSeperateStyle(style)
     // 处理$li样式
+    console.log('this._oriComp', this._oriComp)
     Object.keys(containerStyle).length && this._oriComp?.update$li(containerStyle)
     // 处理element-box样式
     Object.keys(elementBoxStyle).length && this._oriComp?.update$boxDiv(elementBoxStyle)
@@ -52,7 +54,8 @@ export default class EqxStyle {
       if(!Object.keys(contentStyle).length) return
       this._oriComp?.update$ContentTextCss?.(contentStyle)
     }
-
+    
+    
     // 图片组件样式处理
     const handleImageStyle = (allStyle: any = {}, contentStyle: any = {}) => {
       // 存在width和height属性, 赋值到contentStyle
@@ -68,7 +71,7 @@ export default class EqxStyle {
     const action = {
       [compType.EqxNewText]: handleEqxNewTextStyle,
       [compType.EqxImage]: handleImageStyle,
-      [compType.EqxInteractiveVideo]: handleImageStyle,
+      // [compType.EqxInteractiveVideo]: handleImageStyle,
     }
     action?.[this.type]?.(allStyle, contentStyle) 
   }
