@@ -38,7 +38,6 @@ export default class CustomStyle {
   public updateStyle(style: object) {
     const { containerStyle, elementBoxStyle, contentStyle } = this.handleSeperateStyle(style)
     // 处理$li样式
-    console.log('this._oriComp', this._oriComp)
     Object.keys(containerStyle).length && this._oriComp?.update$li(containerStyle)
     // 处理element-box样式
     Object.keys(elementBoxStyle).length && this._oriComp?.update$boxDiv(elementBoxStyle)
