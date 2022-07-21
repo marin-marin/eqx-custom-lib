@@ -3,7 +3,7 @@ import CompService from "./comp.service"
 import ListenerService from "./listener.service"
 import { EqxScene, EqxPage } from '../types'
 
-class customPage {
+class CustomPage {
   constructor(oriPage: EqxPage) {
     this._oriPage = oriPage
     // _isRenderSuccess必须在compService前渲染
@@ -16,17 +16,13 @@ class customPage {
   public listenerService: ListenerService
   
   // pageId`u
-  private get pageId() {
+  public get pageId() {
     return this._oriPage.pageJson.id
   }
   // pageName
   private get pageName() {
     return this._oriPage.pageJson.name
   } 
-  // pageList中的页面索引， 从0开始计算
-  private get pageIndex() {
-    return this._oriPage.pageJson.num - 1
-  }
   public compService: CompService | null = null
   // 渲染成功标志
   private _isRenderSuccess: Boolean = false
@@ -77,7 +73,7 @@ export default class PageService extends EqxCustomMgrServ {
    */
   private initPageList() {
     this._eqxScene?.eqxPageList?.forEach((page: any= {}) => {
-      this._pageList.push(new customPage(page))
+      this._pageList.push(new CustomPage(page))
     })
   }
   /**
@@ -86,5 +82,12 @@ export default class PageService extends EqxCustomMgrServ {
    */
   public getPageList = () => {
     return this._pageList
+  }
+  /**
+   * 根据id获取页面
+   */
+  public getPageById = (id: number) => {
+    if(!id) throw new Error("页面ID必传")
+    return this._pageList.find((page: CustomPage) => page.pageId === id)
   }
 }
