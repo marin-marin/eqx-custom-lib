@@ -14,7 +14,6 @@ module.exports = {
     devServer: {
         port: 3443
     },
-    devtool: 'source-map',
     module: {
         rules: [
             {
