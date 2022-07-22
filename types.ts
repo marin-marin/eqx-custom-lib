@@ -16,7 +16,8 @@ export interface EqxContainerStyle {
 
 export interface EqxProperties {
   required?: boolean,
-  disabled?: boolean
+  disabled?: boolean,
+  coverImg?: string
 }
 
 export interface EqxCompJson {

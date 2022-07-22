@@ -38,6 +38,12 @@ class CustomComp {
     private get editorType() {
         return this._oriComp?.eqxScene?.meta?.type || PRODUCT_TYPE.h5
     }
+    private updateCompJsonCss(css: any = {}) {
+        this._oriComp?.updateCompJsonCss(css)
+    }
+    private updateCompJsonAttr(prop: any = {}) {
+        this._oriComp?.updateCompJsonProperties(prop)
+    }
     // 设置originComp
     public handleSetOriginComp(oriComp: EqxComp) {
         this._oriComp = oriComp
@@ -64,11 +70,41 @@ class CustomComp {
         compJson.css && this._styleService.updateStyle(compJson.css)
     }
 
-    private updateCompJsonCss(css: any = {}) {
-        this._oriComp?.updateCompJsonCss(css)
+    // 更新样式
+    public updateStyle(css: object) {
+        const updateJson = { css }
+        return this.update(updateJson)
     }
-    private updateCompJsonAttr(prop: any = {}) {
-        this._oriComp?.updateCompJsonProperties(prop)
+
+    // 更新文本内容
+    public updateTextContent(content: string) {
+        const updateJson = { content }
+        return this.update(updateJson)
+    }
+
+    // 更新图片/视频Src源
+    public updateImageOrVideoSrc(src: string) {
+        if(!src) throw new Error('src不能为空')
+        const updateJson = { src }
+        return this.update(updateJson)
+    }
+
+    // 更新下拉框 单选框 多选框选项
+    public updateOptions(choices: object) {
+        const updateJson = { choices }
+        return this.update(updateJson)
+    }
+
+    // 更新表单规则
+    public updateFormRule(rule: object) {
+        const updateJson = { properties: rule }
+        return this.update(updateJson)
+    }
+
+    // 更新视频封面
+    public updateVideoCoverImg(rule: object) {
+        const updateJson = { properties: rule }
+        return this.update(updateJson)
     }
 
     /**

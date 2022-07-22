@@ -24,7 +24,7 @@ export default class CustomCompAction {
 
     // 文本组件处理
     private handleEqxNewText(compJson: EqxCompJson) {
-        if (!compJson.content) return;
+        // if (!compJson.content) return;
         this._oriComp?.updateContent?.(compJson.content) || defaultAction;
     }
 
