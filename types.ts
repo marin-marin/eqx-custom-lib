@@ -41,6 +41,7 @@ declare global {
   interface Window {
     EqxCustomManager: any
     _EqxCustomManager: any
+    userInfo: any
   }
 }
 

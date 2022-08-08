@@ -42,4 +42,8 @@ export default class EqxCustomMgrServ {
     this._eqxScene = eqxScene
     this.scene = new CustomScene(eqxScene)
   }
+
+  public get userInfo () {
+    return window.userInfo || {}
+  }
 }
