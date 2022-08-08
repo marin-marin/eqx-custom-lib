@@ -22,6 +22,14 @@ export default class EqxCustomManager {
     public compService: CompService | null = null
     public controlService: ControlService | null = null
 
+    public get userInfo () {
+        return window.userInfo || null
+    }
+
+    public static getUserInfo = () => {
+        return window.userInfo || null
+    }
+
     public init = (eqxScene: EqxScene) => {
         console.log('pageInit')
         // this.compService = new CompService(eqxScene)
