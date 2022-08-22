@@ -22,7 +22,7 @@ export default class EqxCustomManager {
     public compService: CompService | null = null
     public controlService: ControlService | null = null
 
-    public get userInfo () {
+    public getUserInfo = () => {
         return window.userInfo || null
     }
 

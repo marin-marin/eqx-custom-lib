@@ -9,7 +9,7 @@ class CustomScene {
 
   // 场景基础信息
   get sceneType() {
-    return this._eqxScene.meta.type
+    return this._eqxScene.meta.type === 101 ? 'h5' : this._eqxScene.meta.type
   }
   get sceneId() {
     return this._eqxScene.meta.id
@@ -21,7 +21,6 @@ class CustomScene {
     return CmdMap.get(this.sceneType) || []
   }
 
-  // TODO: 分化不同编辑器的能力
   execCustomCmd (cmdName: string, args: any) {
     if (this.cmdList.includes(cmdName)) {
       this._eqxScene?.execCmd(cmdName, args)
