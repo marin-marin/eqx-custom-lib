@@ -1,6 +1,6 @@
 export const CmdMap = new Map([
     ['h5', ['toPage', 'nextPage', 'prevPage']],
-    ['hd', ['toPage', 'startGame', ]],
+    ['hd', ['toPage', 'startGame', 'toMyPrize', 'toRule', 'toggleBgm']], 
     ['form', ['toCover', 'toResult', 'scroll']],
     ['lp', ['scroll']]
 ])
